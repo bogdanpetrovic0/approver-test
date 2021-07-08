@@ -1,0 +1,3 @@
+build:
+  docker:
+    circleci-job-approver: Dockerfile
