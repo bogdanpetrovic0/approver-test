@@ -12,7 +12,7 @@ sleep_seconds = 60
 
 class CircleciApprover:
 
-    def __init__(self, jiraApiEmail: str, jiraApiToken: str) -> None:
+    def __init__(self) -> None:
         self.circle_token = os.environ['CIRCLE_TOKEN']
         self.circle_project = os.environ['CIRCLE_PROJECT']
         self.circle_branch = os.environ['CIRCLE_BRANCH']
