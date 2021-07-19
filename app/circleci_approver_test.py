@@ -1,4 +1,5 @@
-from circleci_approver import fetch_and_approve_jobs
+from circleci_approver import CircleciApprover
 
 if __name__ == "__main__":
-    fetch_and_approve_jobs()
+    approver = CircleciApprover()
+    approver.fetch_and_approve_jobs()

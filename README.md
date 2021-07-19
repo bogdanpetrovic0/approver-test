@@ -1,4 +1,4 @@
-This is CircleCI job approver, inteded to approve jobs with special contexts and needed credentials from a save and limited environment.
+This is CircleCI job approver, intended to approve jobs with special contexts and needed credentials from a safe and limited environment.
 
 Prepare
 create .env file from .env.SAMPLE
