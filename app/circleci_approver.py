@@ -59,7 +59,7 @@ class CircleciApprover:
     def fetch_and_approve_jobs() -> None:
         print('Running fetch_and_approve_jobs...')
 
-        pipelines = self..get_pipelines()
+        pipelines = self.get_pipelines()
         for pipeline in pipelines:
             workflow_ids = self.get_worklows_for_pipeline(pipeline)
 
