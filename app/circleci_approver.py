@@ -39,7 +39,7 @@ class CircleciApprover:
         assert len(workflow_ids) < 2, f'Multiple workflows found for pipeline {pipeline}, workflows: {workflow_ids}'
         return workflow_ids
 
-    def approve_workflow_job(self, workflow_id):
+    def approve_workflow_job(self, workflow_id: str) -> None:
         jobs_url = f'{self.circle_base_url}/workflow/{workflow_id}/job'
         jobs_response = requests.get(jobs_url, auth=self.circle_auth).json()
         assert hasattr(jobs_response, 'items'), f'Error fetching workflows from {workflows_url}, received:\n{jobs_response}'
@@ -56,7 +56,7 @@ class CircleciApprover:
             raise Exception(f'Unsuccessful approval, status code: {approval_response.status_code}, message:\n{aproval_response_text}')
 
     # Since we deploy regularly, the latest unapproved workflow should be found on the first pipeline page, earlier should be approved already
-    def fetch_and_approve_jobs() -> None:
+    def fetch_and_approve_jobs(self) -> None:
         print('Running fetch_and_approve_jobs...')
 
         pipelines = self.get_pipelines()
