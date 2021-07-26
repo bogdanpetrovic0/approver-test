@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  circleci-job-approver:
+    env_file:
+      - .env
+    container_name: circleci-job-approver
+    image: celtra/circleci-job-approver
+    build: ./
+    command: sleep infinity # Keep container running for debug
+    volumes:
+      - ./app:/app:rw
+
+  circleci-job-approver-test:
+    env_file:
+      - .env
+    container_name: circleci-job-approver-test
+    image: celtra/circleci-job-approver
+    build: ./
+    command: ["python", "/app/circleci_approver_test.py"]
