@@ -1,3 +1,6 @@
 build:
   docker:
     circleci-job-approver: Dockerfile
+run:
+  circleci-job-approver:
+    image: circleci-job-approver
