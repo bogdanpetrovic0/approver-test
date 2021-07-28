@@ -19,7 +19,7 @@ class CircleciApprover:
         self._circle_workflow = os.environ['CIRCLE_WORKFLOW']
         self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB']
         self._merger_name = os.getenv('MERGER_NAME')
-        self._job_dependency = os.getenv('WAIT_FOR_JOB')
+        self._job_dependency = os.getenv('JOB_DEPENDENCY')
 
         self._circle_base_url = 'https://circleci.com/api/v2'
         self._circle_auth = (self._circle_token, '')
