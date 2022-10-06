@@ -3,12 +3,8 @@ import sys
 import time
 import requests
 import json
-
-
+from apscheduler.schedulers.blocking import BlockingScheduler
 from typing import List, Dict, Any
-
-sleep_seconds = 60
-
 
 class CircleciApprover:
 
@@ -77,14 +73,10 @@ class CircleciApprover:
 
 
 def main() -> None:
+    sched = BlockingScheduler()
     approver = CircleciApprover()
-
-    while True:
-        approver.fetch_and_approve_jobs()
-
-        print(f"Completed, sleeping {sleep_seconds}")
-        time.sleep(sleep_seconds)
-
+    sched.add_job(approver.fetch_and_approve_jobs, 'cron', hour='9,13,16', timezone='Europe/Ljubljana')
+    sched.start()
 
 if __name__ == "__main__":
     main()
