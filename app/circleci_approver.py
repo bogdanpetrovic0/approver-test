@@ -43,6 +43,7 @@ class CircleciApprover:
 
         # Don't do anything if job dependency is not finished yet - causes broken authorization on circleci - temp solution, hopefully cirlce will fix this
         if self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']:
+            print(f'Jobs dependency not finished for workflow: {workflow_id}. Skipping approval.')
             return
 
         approval_id = [job['approval_request_id'] for job in jobs_response['items'] if job['name'] == self._circle_approval_job][0]
