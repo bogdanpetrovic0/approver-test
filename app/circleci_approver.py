@@ -20,7 +20,7 @@ class CircleciApprover:
 
         self._circle_base_url = 'https://circleci.com/api/v2'
         self._circle_auth = (self._circle_token, '')
-        self.max_retries = 5
+        self.max_retries = 9
         self.retry_sleep_time = 60
 
 
