@@ -70,7 +70,7 @@ class CircleciApprover:
             raise Exception(f'Unsuccessful approval, status code: {approval_response.status_code}, message:\n{aproval_response_text}')
 
     def _dependency_finished(self, jobs_response) -> bool:
-        return self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
+        return self._job_dependency is None or [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
 
     # Since we deploy regularly, the latest unapproved workflow should be found on the first pipeline page, earlier should be approved already
     def fetch_and_approve_jobs(self) -> None:
