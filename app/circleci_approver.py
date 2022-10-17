@@ -44,13 +44,13 @@ class CircleciApprover:
         assert hasattr(jobs_response, 'items'), f'Error fetching workflows from {workflows_url}, received:\n{jobs_response}'
 
         retries = 0
-        dependency_finished = check_dependency(jobs_response)
+        dependency_finished = self._dependency_finished(jobs_response)
 
         while not dependency_finished and retries < self.max_retries:
             print(f'Dependecy not finshed for workflow: {workflow_id}. Waiting for {self.retry_sleep_time} seconds in retry number {retries}')
             time.sleep(self.retry_sleep_time)
             retries = retries + 1
-            dependency_finished = check_dependency(jobs_response)
+            dependency_finished = self._dependency_finished(jobs_response)
 
         # Don't do anything if job dependency is not finished yet - causes broken authorization on circleci - temp solution, hopefully cirlce will fix this
         if not dependency_finished:
@@ -69,6 +69,9 @@ class CircleciApprover:
         if approval_response.status_code != 400 or aproval_response_text['message'] != 'Job already approved.':
             raise Exception(f'Unsuccessful approval, status code: {approval_response.status_code}, message:\n{aproval_response_text}')
 
+    def _dependency_finished(self, jobs_response) -> bool:
+        return self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
+
     # Since we deploy regularly, the latest unapproved workflow should be found on the first pipeline page, earlier should be approved already
     def fetch_and_approve_jobs(self) -> None:
         print('Running fetch_and_approve_jobs...')
@@ -83,9 +86,6 @@ class CircleciApprover:
             elif len(workflow_ids) > 1:
                 print(f'Multiple workflows found for pipeline {pipeline}, most likely a rerun, skipping. workflows: {workflow_ids}')
                 break
-
-    def dependency_finished(self, jobs_response) -> bool:
-        return self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
 
 
 def main() -> None:
