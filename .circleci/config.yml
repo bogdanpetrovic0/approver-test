@@ -31,8 +31,8 @@ jobs:
       - run:
           name: Sleep
           command: |
-            echo "Sleeping for 120 seconds"
-            sleep 120
+            echo "Sleeping for 180 seconds"
+            sleep 180
 
 workflows:
   version: 2.1
@@ -43,8 +43,6 @@ workflows:
             branches:
               ignore: master
       - wait-job:
-          requires:
-            - build-and-test
           filters:
             branches:
               ignore: master
@@ -52,4 +50,6 @@ workflows:
           filters:
             branches:
               ignore: master
+          requires:
+            - wait-job
           type: approval
