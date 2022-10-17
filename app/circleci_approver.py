@@ -85,7 +85,7 @@ class CircleciApprover:
                 break
 
     def dependency_finished(self, jobs_response) -> bool:
-        retrun self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']:
+        returns self._job_dependency is not None and not [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']:
 
 
 def main() -> None:
