@@ -53,7 +53,7 @@ class CircleciApprover:
             dependency_finished = check_dependency(jobs_response)
 
         # Don't do anything if job dependency is not finished yet - causes broken authorization on circleci - temp solution, hopefully cirlce will fix this
-        if not dependency_finished
+        if not dependency_finished:
             print(f'Jobs dependency not finished after {retries} retries for workflow: {workflow_id}. Skipping approval!')
             return
 
