@@ -38,18 +38,23 @@ class CircleciApprover:
         workflow_ids = [workflow['id'] for workflow in workflows_response['items'] if workflow['name'] == self._circle_workflow]
         return workflow_ids
 
-    def _approve_workflow_job(self, workflow_id: str) -> None:
-        jobs_url = f'{self._circle_base_url}/workflow/{workflow_id}/job'
+    def _get_job_response(self, jobs_url):
         jobs_response = requests.get(jobs_url, auth=self._circle_auth).json()
         assert hasattr(jobs_response, 'items'), f'Error fetching workflows from {workflows_url}, received:\n{jobs_response}'
+        return jobs_response
+
+    def _approve_workflow_job(self, workflow_id: str) -> None:
+        jobs_url = f'{self._circle_base_url}/workflow/{workflow_id}/job'
+        jobs_response = self._get_job_response(jobs_url)
+        dependency_finished = self._dependency_finished(jobs_response)
 
         retries = 0
-        dependency_finished = self._dependency_finished(jobs_response)
 
         while not dependency_finished and retries < self.max_retries:
             print(f'Dependecy not finshed for workflow: {workflow_id}. Waiting for {self.retry_sleep_time} seconds in retry number {retries}')
             time.sleep(self.retry_sleep_time)
             retries = retries + 1
+            jobs_response = self._get_job_response(jobs_url)
             dependency_finished = self._dependency_finished(jobs_response)
 
         # Don't do anything if job dependency is not finished yet - causes broken authorization on circleci - temp solution, hopefully cirlce will fix this
