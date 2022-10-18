@@ -48,7 +48,6 @@ class CircleciApprover:
         jobs = self._get_jobs(jobs_url)
         dependency_finished = self._dependency_finished(jobs)
         retries = 0
-
         while not dependency_finished and retries < self.max_retries:
             print(f'Dependecy not finshed for workflow: {workflow_id}. Waiting for {self.retry_sleep_time} seconds in retry number {retries}')
             time.sleep(self.retry_sleep_time)
