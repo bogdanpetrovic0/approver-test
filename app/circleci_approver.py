@@ -20,7 +20,7 @@ class CircleciApprover:
 
         self._circle_base_url = 'https://circleci.com/api/v2'
         self._circle_auth = (self._circle_token, '')
-        self.max_retries = 9
+        self.max_retries = 10
         self.retry_sleep_time = 60
 
 
@@ -38,31 +38,30 @@ class CircleciApprover:
         workflow_ids = [workflow['id'] for workflow in workflows_response['items'] if workflow['name'] == self._circle_workflow]
         return workflow_ids
 
-    def _get_job_response(self, jobs_url):
-        jobs_response = requests.get(jobs_url, auth=self._circle_auth).json()
-        assert hasattr(jobs_response, 'items'), f'Error fetching workflows from {workflows_url}, received:\n{jobs_response}'
-        return jobs_response
+    def _get_jobs(self, jobs_url):
+        jobs = requests.get(jobs_url, auth=self._circle_auth).json()
+        assert hasattr(jobs, 'items'), f'Error fetching workflows from {workflows_url}, received:\n{jobs}'
+        return jobs
 
     def _approve_workflow_job(self, workflow_id: str) -> None:
         jobs_url = f'{self._circle_base_url}/workflow/{workflow_id}/job'
-        jobs_response = self._get_job_response(jobs_url)
-        dependency_finished = self._dependency_finished(jobs_response)
-
+        jobs = self._get_jobs(jobs_url)
+        dependency_finished = self._dependency_finished(jobs)
         retries = 0
 
         while not dependency_finished and retries < self.max_retries:
             print(f'Dependecy not finshed for workflow: {workflow_id}. Waiting for {self.retry_sleep_time} seconds in retry number {retries}')
             time.sleep(self.retry_sleep_time)
             retries = retries + 1
-            jobs_response = self._get_job_response(jobs_url)
-            dependency_finished = self._dependency_finished(jobs_response)
+            jobs = self._get_jobs(jobs_url)
+            dependency_finished = self._dependency_finished(jobs)
 
         # Don't do anything if job dependency is not finished yet - causes broken authorization on circleci - temp solution, hopefully cirlce will fix this
         if not dependency_finished:
             print(f'Jobs dependency not finished after {retries} retries for workflow: {workflow_id}. Skipping approval!')
             return
 
-        approval_id = [job['approval_request_id'] for job in jobs_response['items'] if job['name'] == self._circle_approval_job][0]
+        approval_id = [job['approval_request_id'] for job in jobs['items'] if job['name'] == self._circle_approval_job][0]
 
         # Latest request deploy found - approve it - does nothing if already approved
         approval_url = f"{self._circle_base_url}/workflow/{workflow_id}/approve/{approval_id}"
@@ -74,8 +73,8 @@ class CircleciApprover:
         if approval_response.status_code != 400 or aproval_response_text['message'] != 'Job already approved.':
             raise Exception(f'Unsuccessful approval, status code: {approval_response.status_code}, message:\n{aproval_response_text}')
 
-    def _dependency_finished(self, jobs_response) -> bool:
-        return self._job_dependency is None or [job for job in jobs_response['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
+    def _dependency_finished(self, jobs) -> bool:
+        return self._job_dependency is None or [job for job in jobs['items'] if job['name'] == self._job_dependency and job['status'] == 'success']
 
     # Since we deploy regularly, the latest unapproved workflow should be found on the first pipeline page, earlier should be approved already
     def fetch_and_approve_jobs(self) -> None:
