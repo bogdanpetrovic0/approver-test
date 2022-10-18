@@ -20,19 +20,9 @@ jobs:
               CIRCLE_BRANCH=$CIRCLE_BRANCH
               CIRCLE_WORKFLOW=feature-branch-workflow
               CIRCLE_APPROVAL_JOB=test-approval
-              JOB_DEPENDENCY="wait-job"
             EOF
 
             docker-compose run circleci-job-approver-test
-  wait-job:
-    docker:
-      - image: cimg/base:2021.07
-    steps:
-      - run:
-          name: Sleep
-          command: |
-            echo "Sleeping for 180 seconds"
-            sleep 180
 
 workflows:
   version: 2.1
@@ -42,14 +32,8 @@ workflows:
           filters:
             branches:
               ignore: master
-      - wait-job:
-          filters:
-            branches:
-              ignore: master
       - test-approval:
           filters:
             branches:
               ignore: master
-          requires:
-            - wait-job
           type: approval
