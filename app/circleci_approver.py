@@ -94,7 +94,8 @@ class CircleciApprover:
 def main() -> None:
     scheduler = BlockingScheduler()
     approver = CircleciApprover()
-    scheduler.add_job(approver.fetch_and_approve_jobs, 'cron', hour='9,13,16', timezone='Europe/Ljubljana')
+    scheduler.add_job(approver.fetch_and_approve_jobs, 'cron', day_of_week='mon,tue,wed,thu,fri', hour='9,13,16', timezone='Europe/Ljubljana')
+    scheduler.add_job(approver.fetch_and_approve_jobs, 'cron', day_of_week='sat', hour='6', timezone='UTC')
     scheduler.start()
 
 if __name__ == "__main__":
