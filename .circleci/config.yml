@@ -25,10 +25,10 @@ jobs:
             docker-compose run circleci-job-approver-test
 
 workflows:
-  version: 2.1
   feature-branch-workflow:
     jobs:
       - build-and-test:
+          context: circleci-token
           filters:
             branches:
               ignore: master
