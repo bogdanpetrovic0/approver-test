@@ -99,7 +99,6 @@ class CircleciApproverMAB(CircleciApprover):
             self._circle_project = os.environ['CIRCLE_PROJECT_MAB']
             self._circle_branch = os.environ['CIRCLE_BRANCH_MAB']
             self._circle_workflow = os.environ['CIRCLE_WORKFLOW_MAB']
-            self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB']
             self._merger_name = os.getenv('MERGER_NAME_MAB')
             self._job_dependency = os.getenv('JOB_DEPENDENCY_MAB')
             super().__init__()
