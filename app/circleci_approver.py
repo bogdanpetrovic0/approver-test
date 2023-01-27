@@ -11,12 +11,6 @@ class CircleciApprover:
 
     def __init__(self) -> None:
         self._circle_token = os.environ['CIRCLE_TOKEN']
-        self._circle_project = os.environ['CIRCLE_PROJECT']
-        self._circle_branch = os.environ['CIRCLE_BRANCH']
-        self._circle_workflow = os.environ['CIRCLE_WORKFLOW']
-        self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB']
-        self._merger_name = os.getenv('MERGER_NAME')
-        self._job_dependency = os.getenv('JOB_DEPENDENCY')
 
         self._circle_base_url = 'https://circleci.com/api/v2'
         self._circle_auth = (self._circle_token, '')
@@ -90,11 +84,45 @@ class CircleciApprover:
                 print(f'Multiple workflows found for pipeline {pipeline}, most likely a rerun, skipping. workflows: {workflow_ids}')
                 break
 
+class CircleciApproverUAB(CircleciApprover):
+        def __init__(self) -> None:
+            self._circle_project = os.environ['CIRCLE_PROJECT_UAB']
+            self._circle_branch = os.environ['CIRCLE_BRANCH_UAB']
+            self._circle_workflow = os.environ['CIRCLE_WORKFLOW_UAB']
+            self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_UAB']
+            self._merger_name = os.getenv('MERGER_NAME_UAB')
+            self._job_dependency = os.getenv('JOB_DEPENDENCY_UAB')
+            super().__init__()
+
+class CircleciApproverMAB(CircleciApprover):
+    def __init__(self) -> None:
+            self._circle_project = os.environ['CIRCLE_PROJECT_MAB']
+            self._circle_branch = os.environ['CIRCLE_BRANCH_MAB']
+            self._circle_workflow = os.environ['CIRCLE_WORKFLOW_MAB']
+            self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB']
+            self._merger_name = os.getenv('MERGER_NAME_MAB')
+            self._job_dependency = os.getenv('JOB_DEPENDENCY_MAB')
+            super().__init__()
+
+class CircleciApproverMABDeploy(CircleciApprover):
+    def __init__(self) -> None:
+        self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB_DEPLOY']
+        super().__init__()
+
+class CircleciApproverMABRTA(CircleciApprover):
+    def __init__(self) -> None:
+        self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB_RTA']
+        super().__init__()
+
 
 def main() -> None:
     scheduler = BlockingScheduler()
-    approver = CircleciApprover()
-    scheduler.add_job(approver.fetch_and_approve_jobs, 'cron', hour='9,13,16', timezone='Europe/Ljubljana')
+    approver_uab = CircleciApproverUAB()
+    approver_mab_deploy = CircleciApproverMABDeploy()
+    approver_mab_rta = CircleciApproverMABRTA()
+    scheduler.add_job(approver_uab.fetch_and_approve_jobs, 'cron', hour='9,13,16', timezone='Europe/Ljubljana')
+    scheduler.add_job(approver_mab_deploy.fetch_and_approve_jobs, 'cron', hour='8:30', timezone='Europe/Ljubljana')
+    scheduler.add_job(approver_mab_rta.fetch_and_approve_jobs, 'cron', hour='13', timezone='Europe/Ljubljana')
     scheduler.start()
 
 if __name__ == "__main__":
