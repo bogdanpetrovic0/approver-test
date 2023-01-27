@@ -104,12 +104,12 @@ class CircleciApproverMAB(CircleciApprover):
             self._job_dependency = os.getenv('JOB_DEPENDENCY_MAB')
             super().__init__()
 
-class CircleciApproverMABDeploy(CircleciApprover):
+class CircleciApproverMABDeploy(CircleciApproverMAB):
     def __init__(self) -> None:
         self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB_DEPLOY']
         super().__init__()
 
-class CircleciApproverMABRTA(CircleciApprover):
+class CircleciApproverMABRTA(CircleciApproverMAB):
     def __init__(self) -> None:
         self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB_RTA']
         super().__init__()
