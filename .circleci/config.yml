@@ -41,3 +41,10 @@ workflows:
       - say-hello:
           requires:
             - approve-hello1
+      - approve-hello2:
+          type: approval
+          requires:
+            - say-hello
+      - say-hello1:
+          requires:
+            - approve-hello2
