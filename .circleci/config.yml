@@ -39,4 +39,4 @@ workflows:
       - approve-hello1:
           type: approval
       - say-hello:
-          requres: approve-hello1
+          requires: approve-hello1
