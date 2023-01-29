@@ -20,9 +20,11 @@ class CircleciApprover:
 
     def _get_pipelines(self) -> List[Dict[str, Any]]:
         pipelines_params = {'branch': self._circle_branch}
-        pipelines_url = f'{self._circle_base_url}/project/{self._circle_project}/pipeline'
+        pipelines_url = f'{self._circle_base_url}/project/github/bogdanpetrovic0/{self._circle_project}/pipeline'
+        print(pipelines_url)
         pipelines_response = requests.get(pipelines_url, params=pipelines_params, auth=self._circle_auth).json()
         assert hasattr(pipelines_response, 'items'), f'Error fetching master pipelines from {pipelines_url}, received:\n{pipelines_response}'
+        #print(pipelines_response)
         return [p for p in pipelines_response['items'] if self._merger_name is None or p['trigger']['actor']['login'] == self._merger_name]
 
     def _get_worklows_for_pipeline(self, pipeline: Dict[str, Any]) -> List[str]:
@@ -113,16 +115,3 @@ class CircleciApproverMABRTA(CircleciApproverMAB):
         self._circle_approval_job = os.environ['CIRCLE_APPROVAL_JOB_MAB_RTA']
         super().__init__()
 
-
-def main() -> None:
-    scheduler = BlockingScheduler()
-    approver_uab = CircleciApproverUAB()
-    approver_mab_deploy = CircleciApproverMABDeploy()
-    approver_mab_rta = CircleciApproverMABRTA()
-    scheduler.add_job(approver_uab.fetch_and_approve_jobs, 'cron', hour='9,13,16', timezone='Europe/Ljubljana')
-    scheduler.add_job(approver_mab_deploy.fetch_and_approve_jobs, 'cron', hour='8:30', timezone='Europe/Ljubljana')
-    scheduler.add_job(approver_mab_rta.fetch_and_approve_jobs, 'cron', hour='13', timezone='Europe/Ljubljana')
-    scheduler.start()
-
-if __name__ == "__main__":
-    main()

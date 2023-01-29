@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.9-slim-buster AS base
 
 WORKDIR /app
 
@@ -11,4 +11,8 @@ ENV PYTHONUNBUFFERED=1
 ENV LANG=en_US.UTF-8
 
 # Run the executable
-CMD ["python", "/app/circleci_approver.py"]
+FROM base as circleci-job-approver-uab
+CMD ["python", "/app/approve_uab.py"]
+
+FROM base as circleci-job-approver-mab
+CMD ["python", "/app/approve_mab.py"]

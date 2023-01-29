@@ -1,11 +1,25 @@
 version: "3.8"
 services:
-  circleci-job-approver:
+  circleci-job-approver-uab:
     env_file:
       - .env
-    container_name: circleci-job-approver
-    image: celtra/circleci-job-approver
-    build: ./
+    container_name: circleci-job-approver-uab
+    image: celtra/circleci-job-approver-uab
+    build:
+      context: ./
+      target: circleci-job-approver-uab
+    command: sleep infinity # Keep container running for debug
+    volumes:
+      - ./app:/app:rw
+
+  circleci-job-approver-mab:
+    env_file:
+      - .env
+    container_name: circleci-job-approver-mab
+    image: celtra/circleci-job-approver-mab
+    build:
+      context: ./
+      target: circleci-job-approver-mab
     command: sleep infinity # Keep container running for debug
     volumes:
       - ./app:/app:rw

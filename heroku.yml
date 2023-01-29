@@ -1,6 +1,13 @@
 build:
   docker:
-    circleci-job-approver: Dockerfile
+    circleci-job-approver-uab:
+      dockerfile: Dockerfile
+      target: circleci-job-approver-uab
+    circleci-job-approver-mab:
+      dockerfile: Dockerfile
+      target: circleci-job-approver-mab
 run:
-  circleci-job-approver:
-    image: circleci-job-approver
+  circleci-job-approver-uab:
+    image: circleci-job-approver-uab
+  circleci-job-approver-mab:
+    image: circleci-job-approver-mab
