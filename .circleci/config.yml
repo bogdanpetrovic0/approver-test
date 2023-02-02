@@ -36,9 +36,9 @@ jobs:
 workflows:
   say-hello-workflow:
     when:
-      and:
-        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - equal: ["test-cron", << pipeline.schedule.name >>]
+      or:
+        - equal: [webhook, << pipeline.trigger_source >>]
+        - equal: [api, << pipeline.trigger_source >>]
     jobs:
       - approve-hello1:
           type: approval
